@@ -36,3 +36,7 @@ next-env.d.ts
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+# runtime logs
+server.log
+server.err.log

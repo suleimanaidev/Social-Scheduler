@@ -69,7 +69,7 @@ export const PLATFORMS: Record<PlatformId, PlatformDef> = {
     id: "linkedin",
     name: "LinkedIn",
     color: "#0a66c2",
-    scope: "openid profile email",
+    scope: "openid profile email w_member_social",
     requiresAppReview: true,
     supportsText: true,
     supportsImages: true,
@@ -82,7 +82,7 @@ export const PLATFORMS: Record<PlatformId, PlatformDef> = {
       )}&redirect_uri=${encodeURIComponent(
         redirectUri,
       )}&scope=${encodeURIComponent(
-        "openid profile email",
+        "openid profile email w_member_social",
       )}&state=${encodeURIComponent(state)}`,
   },
   tiktok: {

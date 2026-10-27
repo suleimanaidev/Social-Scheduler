@@ -51,7 +51,9 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? new URL(req.url).origin;
+  const siteUrl = (
+    process.env.NEXT_PUBLIC_SITE_URL || new URL(req.url).origin
+  ).replace(/\/+$/, "");
   const redirectUri = `${siteUrl}/api/auth/callback?platform=${platform}`;
 
   try {

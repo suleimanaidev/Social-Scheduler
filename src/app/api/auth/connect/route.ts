@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { randomBytes } from "crypto";
-import { cookies } from "next/headers";
 import { getPlatform } from "@/lib/platforms";
 import { createClient } from "@/lib/supabase/server";
-import type { PlatformId } from "@/lib/types";
 
 function clientIdFor(platform: string): string {
   switch (platform) {
@@ -47,17 +45,22 @@ export async function GET(req: NextRequest) {
   }
 
   const state = randomBytes(16).toString("hex");
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? new URL(req.url).origin;
+  // Fall back to the request origin so it works on localhost AND Vercel.
+  const siteUrl = (
+    process.env.NEXT_PUBLIC_SITE_URL || new URL(req.url).origin
+  ).replace(/\/+$/, "");
   const redirectUri = `${siteUrl}/api/auth/callback?platform=${platform}`;
 
-  cookies().set(`oauth_state_${platform}`, state, {
+  const url = def.authorizeUrl({ clientId, redirectUri, state });
+
+  // Set the state cookie directly on the redirect response so it is always sent.
+  const response = NextResponse.redirect(url);
+  response.cookies.set(`oauth_state_${platform}`, state, {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     maxAge: 600,
     path: "/",
   });
-
-  const url = def.authorizeUrl({ clientId, redirectUri, state });
-  return NextResponse.redirect(url);
+  return response;
 }
