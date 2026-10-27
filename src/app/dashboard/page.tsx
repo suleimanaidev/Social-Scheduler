@@ -49,7 +49,8 @@ export default async function DashboardPage() {
       .eq("status", "failed"),
     supabase
       .from("connected_accounts")
-      .select("id", { count: "exact", head: true }),
+      .select("id", { count: "exact", head: true })
+      .eq("status", "active"),
     supabase
       .from("posts")
       .select(

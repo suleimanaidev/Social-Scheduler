@@ -5,6 +5,7 @@ import { formatKarachi } from "@/lib/time";
 import { PageHeader } from "@/components/ui";
 import { PlatformIcon } from "@/components/PlatformIcon";
 import { ConnectButton } from "./ConnectButton";
+import { DisconnectButton } from "./DisconnectButton";
 import { cn } from "@/lib/utils";
 import { Plug, CheckCircle2, Clock } from "lucide-react";
 
@@ -46,10 +47,12 @@ export default async function AccountsPage({
 
   const list = (accounts ?? []) as ConnectedAccount[];
 
-  // First connected account per platform.
+  // First *active* account per platform (revoked ones don't count as connected).
   const byPlatform = new Map<PlatformId, ConnectedAccount>();
   for (const a of list) {
-    if (!byPlatform.has(a.platform)) byPlatform.set(a.platform, a);
+    if (a.status === "active" && !byPlatform.has(a.platform)) {
+      byPlatform.set(a.platform, a);
+    }
   }
 
   return (
@@ -139,6 +142,15 @@ export default async function AccountsPage({
                 >
                   <Clock className="h-4 w-4" /> Coming Soon
                 </button>
+              ) : connected ? (
+                <div className="flex items-start gap-2">
+                  <div className="flex-1">
+                    <ConnectButton platform={def.id} connected={connected} />
+                  </div>
+                  <div className="flex-1">
+                    <DisconnectButton accountId={acc!.id} />
+                  </div>
+                </div>
               ) : (
                 <ConnectButton platform={def.id} connected={connected} />
               )}
